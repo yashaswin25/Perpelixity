@@ -12,4 +12,3 @@ deap>=1.4.1
 update_checker>=0.18.0
 tqdm>=4.65.0
 stopit>=1.1.2
-swig>=4.0.0 

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import os
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -12,17 +13,17 @@ def create_classification_data(n_samples=1000):
     tenure = np.random.randint(1, 72, n_samples)  # months
     monthly_charges = np.random.normal(65, 30, n_samples).round(2)
     total_charges = (tenure * monthly_charges).round(2)
-    
+
     # Generate categorical features
     contract_types = np.random.choice(['Month-to-month', 'One year', 'Two year'], n_samples, p=[0.5, 0.3, 0.2])
     payment_methods = np.random.choice(['Electronic check', 'Mailed check', 'Bank transfer', 'Credit card'], n_samples)
     internet_service = np.random.choice(['DSL', 'Fiber optic', 'No'], n_samples, p=[0.3, 0.4, 0.3])
-    
+
     # Generate additional features
     online_security = np.random.choice(['Yes', 'No', 'No internet service'], n_samples, p=[0.3, 0.5, 0.2])
     online_backup = np.random.choice(['Yes', 'No', 'No internet service'], n_samples, p=[0.3, 0.5, 0.2])
     tech_support = np.random.choice(['Yes', 'No', 'No internet service'], n_samples, p=[0.3, 0.5, 0.2])
-    
+
     # Generate target variable (Churn) based on features
     churn_prob = (
         0.1 +  # Base probability
@@ -32,8 +33,10 @@ def create_classification_data(n_samples=1000):
         0.2 * (online_security == 'Yes') -  # Lower churn with security
         0.2 * (tech_support == 'Yes')  # Lower churn with tech support
     )
+    # Ensure probabilities are between 0 and 1
+    churn_prob = np.clip(churn_prob, 0.001, 0.999)
     churn = np.random.binomial(1, churn_prob)
-    
+
     # Create DataFrame
     df = pd.DataFrame({
         'customer_id': customer_ids,
@@ -48,7 +51,7 @@ def create_classification_data(n_samples=1000):
         'tech_support': tech_support,
         'churn': churn
     })
-    
+
     return df
 
 # Create sample data for regression (House Price Prediction)
@@ -59,11 +62,11 @@ def create_regression_data(n_samples=1000):
     bedrooms = np.random.randint(1, 6, n_samples)
     bathrooms = np.random.randint(1, 4, n_samples)
     year_built = np.random.randint(1950, 2023, n_samples)
-    
+
     # Generate categorical features
     location = np.random.choice(['Urban', 'Suburban', 'Rural'], n_samples, p=[0.4, 0.4, 0.2])
     condition = np.random.choice(['Excellent', 'Good', 'Fair', 'Poor'], n_samples, p=[0.2, 0.4, 0.3, 0.1])
-    
+
     # Generate target variable (Price) based on features
     base_price = 200000
     price = (
@@ -79,7 +82,7 @@ def create_regression_data(n_samples=1000):
     )
     price = price + np.random.normal(0, 50000, n_samples)  # Add some noise
     price = price.round(-3)  # Round to nearest thousand
-    
+
     # Create DataFrame
     df = pd.DataFrame({
         'house_id': house_ids,
@@ -91,27 +94,34 @@ def create_regression_data(n_samples=1000):
         'condition': condition,
         'price': price
     })
-    
+
     return df
 
 # Create and save the sample data
 def main():
+    # Create directory for sample data if it doesn't exist
+    os.makedirs('sample_data', exist_ok=True)
+
     # Create classification data
-    classification_df = create_classification_data()
-    
+    classification_df = create_classification_data(n_samples=500)
+
     # Create regression data
-    regression_df = create_regression_data()
-    
-    # Save to Excel file with two sheets
-    with pd.ExcelWriter('sample_data.xlsx') as writer:
+    regression_df = create_regression_data(n_samples=500)
+
+    # Save to Excel files
+    classification_df.to_excel('sample_data/classification_data.xlsx', index=False)
+    regression_df.to_excel('sample_data/regression_data.xlsx', index=False)
+
+    # Also save to a single file with two sheets
+    with pd.ExcelWriter('sample_data/sample_data.xlsx') as writer:
         classification_df.to_excel(writer, sheet_name='Classification', index=False)
         regression_df.to_excel(writer, sheet_name='Regression', index=False)
-    
-    print("Sample data has been created and saved to 'sample_data.xlsx'")
+
+    print("Sample data has been created and saved to the 'sample_data' directory")
     print("\nClassification Data Preview:")
     print(classification_df.head())
     print("\nRegression Data Preview:")
     print(regression_df.head())
 
 if __name__ == "__main__":
-    main() 
+    main()

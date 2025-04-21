@@ -5,9 +5,9 @@ This is the AutoML version of the ML Prediction System, which uses automated mac
 ## Key Differences from Original Version
 
 1. **Automated Model Selection**:
-   - Uses Auto-sklearn to automatically select the best model
-   - Optimizes hyperparameters automatically
-   - Tries multiple algorithms and configurations
+   - Uses GridSearchCV to automatically find the best hyperparameters
+   - Optimizes model performance through extensive parameter search
+   - Tries multiple configurations to find the optimal settings
 
 2. **Training Time Control**:
    - Configurable training time limit
@@ -33,10 +33,7 @@ source venv/bin/activate  # On Linux/Mac
 pip install -r requirements.txt
 ```
 
-Note: Auto-sklearn requires SWIG to be installed. Make sure to install it before installing the requirements:
-- Windows: Download from [SWIG website](http://www.swig.org/download.html)
-- Linux: `sudo apt-get install swig`
-- Mac: `brew install swig`
+Note: TPOT requires several dependencies that will be installed automatically with the requirements.txt file.
 
 ## Usage
 
@@ -100,8 +97,11 @@ streamlit run ml_prediction_system_automl.py
 - joblib>=1.1.0
 - openpyxl>=3.0.0
 - xlsxwriter>=3.0.0
-- auto-sklearn>=0.15.0
-- swig>=4.0.0
+- scikit-learn>=1.0.0
+- pandas>=1.5.0
+- numpy>=1.20.0
+- matplotlib>=3.5.0
+- seaborn>=0.11.0
 
 ## Notes
 
@@ -125,4 +125,4 @@ streamlit run ml_prediction_system_automl.py
 3. **Memory Issues**:
    - Reduce training time
    - Use smaller datasets
-   - Increase system memory if possible 
+   - Increase system memory if possible
